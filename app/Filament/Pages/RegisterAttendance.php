@@ -1,0 +1,144 @@
+<?php
+
+namespace App\Filament\Pages;
+
+use App\Models\Lesson;
+use App\Models\Attendance;
+use Filament\Pages\Page;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use App\Enums\EnrollStatus;
+
+class RegisterAttendance extends Page implements HasForms
+{
+    use InteractsWithForms;
+
+    protected static bool $shouldRegisterNavigation = false;
+
+    // Rota automática do Filament
+    protected static ?string $slug = 'register-attendance/{lesson_id}';
+
+    protected string $view = 'filament.pages.register-attendance';
+
+    public ?array $data = [];
+    public ?Lesson $lesson = null;
+    public array $attendances = [];
+
+    public function mount($lesson_id): void
+    {
+        $lesson_id = (int) $lesson_id;
+
+        $this->lesson = Lesson::with([
+            'subjectClass.schoolClass.enrollments.student'
+        ])->find($lesson_id);
+
+        if (!$this->lesson) {
+            abort(404);
+        }
+
+        $this->loadStudents();
+    }
+
+    protected function loadStudents(): void
+    {
+        $enrollments = $this->lesson
+            ->subjectClass
+            ->schoolClass
+            ->enrollments
+            ->where('status', EnrollStatus::cursando)
+            ->sortBy(fn ($e) => $e->student->name);
+
+        $this->attendances = $enrollments->map(function ($enrollment) {
+
+            $attendance = Attendance::firstOrNew([
+                'lesson_id' => $this->lesson->id,
+                'student_id' => $enrollment->student->id,
+            ]);
+
+            return [
+                'id' => $enrollment->student->id,
+                'name' => $enrollment->student->name,
+                'is_present' => $attendance->exists
+                    ? $attendance->is_present
+                    : true,
+            ];
+        })->values()->toArray();
+
+        $this->data['is_present'] = collect($this->attendances)
+            ->pluck('is_present', 'id')
+            ->toArray();
+    }
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->schema([
+                Grid::make(1)
+                    ->schema($this->buildCheckboxes()),
+            ])
+            ->statePath('data');
+    }
+
+    protected function buildCheckboxes(): array
+    {
+        $fields = [];
+
+        foreach ($this->attendances as $student) {
+            $fields[] = Checkbox::make("is_present.{$student['id']}")
+                ->label($student['name'])
+                ->default($student['is_present']);
+        }
+
+        return $fields;
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label('Salvar Frequência')
+                ->icon('heroicon-o-document-plus')
+                ->action('saveAttendance'),
+
+            Action::make('back')
+                ->label('Voltar')
+                ->icon('heroicon-o-arrow-left')
+                ->color('warning')
+                //->url(url()->previous()),
+                ->extraAttributes(['onclick' => 'history.back()']),
+        ];
+    }
+
+    public function saveAttendance(): void
+    {
+        foreach ($this->attendances as $student) {
+
+            $isPresent = $this->data['is_present'][$student['id']] ?? false;
+
+            Attendance::updateOrCreate(
+                [
+                    'lesson_id' => $this->lesson->id,
+                    'student_id' => $student['id'],
+                ],
+                [
+                    'is_present' => $isPresent,
+                ]
+            );
+        }
+
+        Notification::make()
+            ->title('Frequência registrada com sucesso!')
+            ->success()
+            ->send();
+    }
+
+    public function getTitle(): string
+    {
+        return "Registro de Frequência";
+    }
+}
