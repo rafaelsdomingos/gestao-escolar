@@ -1,16 +1,8 @@
-<p align="center"><a href="https://bece.cultura.ce.gov.br/sebp/" target="_blank"><img src="public/images/logo_vila.png" width="400" alt="Logo do SEBPCE"></a></p>
+# Gestão Escolar
 
 ## Sobre
 
-Esse repositório fornece uma aplicação laravel com a finalidade de ajudar no gerenciamento das atividades escolares do Complexo Cultural Vila das Artes.
-
-## Vila das Artes
-A Vila das Artes é um equipamento cultural da Prefeitura de Fortaleza, vinculado à Secretaria Municipal da Cultura (Secultfor) e gerido em parceria com o Instituto Cultural Iracema (ICI), por meio de Contrato de Gestão. Sua estrutura administrativa garante eficiência na execução das políticas públicas de cultura, permitindo que o espaço se afirme como um ambiente vivo de formação, criação e difusão das artes em suas múltiplas linguagens.
-
-Inaugurada em 2006, a Vila das Artes é um espaço de formação, pesquisa, produção e fruição artística, que oferece cursos e atividades gratuitas em diversos formatos e voltadas a diferentes públicos.
-
-A Vila das Artes materializa a política pública de formação para as artes delineada pela Secultfor, sendo um dos principais exemplos de gestão participativa na cultura de Fortaleza. Suas ações priorizam o acesso de crianças e jovens oriundos da escola pública, combinando cursos de curta e longa duração com atividades voltadas à reflexão sobre as relações entre arte e cidade.
-
+Esse repositório fornece uma aplicação laravel com a finalidade de ajudar no gerenciamento de atividades escolares.
 
 
 ## Tecnologias
@@ -19,14 +11,6 @@ A Vila das Artes materializa a política pública de formação para as artes de
 * Laravel 12
 * Filament 3.2
 * MySQL 8.0
-
-## Requisitos
-
-* PHP 8.2^
-* Docker
-* Docker Compose
-* Composer
-
 
 
 ## Desenvolvimento
