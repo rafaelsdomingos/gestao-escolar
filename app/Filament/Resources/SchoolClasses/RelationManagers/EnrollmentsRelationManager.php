@@ -32,6 +32,7 @@ use Filament\Actions\BulkAction;
 use Illuminate\Support\Collection;
 use Filament\Support\Icons\Heroicon;
 use BackedEnum;
+use Filament\Actions\Action;
 
 
 class EnrollmentsRelationManager extends RelationManager
@@ -107,11 +108,11 @@ class EnrollmentsRelationManager extends RelationManager
                     ->formatStateUsing(fn (?EnrollStatus $state) => $state?->label())
                     ->badge()
                     ->color(fn (?EnrollStatus $state): string => match ($state) {
-                        EnrollStatus::cursando => 'info',
-                        EnrollStatus::aprovado => 'success',
-                        EnrollStatus::reprovado => 'danger',
-                        EnrollStatus::abandono => 'danger',
-                        EnrollStatus::trancado => 'gray',
+                        EnrollStatus::CURSANDO => 'info',
+                        EnrollStatus::APROVADO => 'success',
+                        EnrollStatus::REPROVADO => 'danger',
+                        EnrollStatus::ABANDONO => 'danger',
+                        EnrollStatus::TRANCADO => 'gray',
                     })
                     ->searchable(),
                 TextColumn::make('notes')

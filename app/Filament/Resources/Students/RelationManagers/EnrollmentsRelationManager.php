@@ -15,7 +15,8 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -25,27 +26,91 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Models\SchoolClass;
 use App\Models\Workshop;
+use App\Models\AcademicYear;
+use App\Enums\EnrollStatus;
+use Filament\Forms\Components\MorphToSelect;
+use Filament\Forms\Components\MorphToSelect\Type;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 
 class EnrollmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'enrollments';
 
+    protected static ?string $title = 'Matrículas';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('enrollable_type')
+                Select::make('academic_year_id')
+                    ->label('Ano letivo')
+                    ->columnSpan(3)
+                    ->options(
+                        AcademicYear::query()
+                            ->orderByDesc('year')
+                            ->pluck('year', 'id')
+                    )
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set) => $set('enrollable', null))
                     ->required(),
-                TextInput::make('enrollable_id')
-                    ->required()
-                    ->numeric(),
+
+                MorphToSelect::make('enrollable')
+                    ->label('Tipo de atividade')
+                    ->live()
+                    ->disabled(fn (Get $get) => blank($get('academic_year_id')))
+                    ->types([
+
+                        Type::make(SchoolClass::class)
+                            ->label('Curso')
+                            ->titleAttribute('name')
+                            ->modifyOptionsQueryUsing(function ($query, Get $get) {
+                                $year = $get('academic_year_id');
+
+                                if ($year) {
+                                    $query->where('academic_year_id', $year);
+                                }
+                            })
+                            ->getOptionLabelFromRecordUsing(function (SchoolClass $record) {
+                                return "{$record->name} - {$record->course->name}";
+                            }),
+
+                        Type::make(Workshop::class)
+                            ->label('Oficina')
+                            ->titleAttribute('name')
+                            ->modifyOptionsQueryUsing(function ($query, Get $get) {
+                                $year = $get('academic_year_id');
+
+                                if ($year) {
+                                    $query->where('academic_year_id', $year);
+                                }
+                            }),
+
+                    ])
+                    ->preload()
+                    ->searchable()
+                    ->columnSpanFull()
+                    ->native(false)
+                    ->required(), 
+
                 DatePicker::make('start_date')
+                    ->label('Data de abertura de matrícula')
                     ->required(),
-                DatePicker::make('end_date'),
-                TextInput::make('status')
+                DatePicker::make('end_date')
+                    ->label('Data de fechamento de matrícula'),
+                Select::make('status')
+                    ->label('Status')
+                    ->options(
+                        collect(EnrollStatus::cases())
+                            ->mapWithKeys(fn ($case) => [$case->value => $case->label()])
+                            ->toArray()
+                    )
+                    ->native(false)
                     ->required(),
-                TextInput::make('notes'),
-            ]);
+                Textarea::make('notes')
+                    ->label('Observações')
+                    ->columnSpan(3)
+            ])->columns(3);
     }
 
     public function table(Table $table): Table
@@ -76,13 +141,11 @@ class EnrollmentsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('start_date')
                     ->label('Data de matrícula')
-                    ->date()
+                    ->date('d/m/Y')
                     ->sortable(),
-                TextColumn::make('status')
-                    ->searchable(),
+                TextColumn::make('status'),
                 TextColumn::make('notes')
                     ->label('Observação')
-                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
                     ->dateTime()
@@ -101,19 +164,21 @@ class EnrollmentsRelationManager extends RelationManager
                 TrashedFilter::make(),
             ])
             ->headerActions([
-                CreateAction::make(),
-                AssociateAction::make(),
+                CreateAction::make()
+                    ->label('Nova matrícula')
+                    ->modalHeading('Matricular estudante'),
+                //AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
+                //DissociateAction::make(),
                 DeleteAction::make(),
                 ForceDeleteAction::make(),
                 RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
+                    //DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),

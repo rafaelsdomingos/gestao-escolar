@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SchoolClasses;
 
 use App\Filament\Resources\SchoolClasses\Pages\CreateSchoolClass;
 use App\Filament\Resources\SchoolClasses\Pages\EditSchoolClass;
+use App\Filament\Resources\SchoolClasses\Pages\ViewSchoolClass;
 use App\Filament\Resources\SchoolClasses\Pages\ListSchoolClasses;
 use App\Filament\Resources\SchoolClasses\Schemas\SchoolClassForm;
 use App\Filament\Resources\SchoolClasses\Tables\SchoolClassesTable;
@@ -57,6 +58,7 @@ class SchoolClassResource extends Resource
         return [
             'index' => ListSchoolClasses::route('/'),
             'create' => CreateSchoolClass::route('/create'),
+            'view' => ViewSchoolClass::route('/{record}'),
             'edit' => EditSchoolClass::route('/{record}/edit'),
         ];
     }

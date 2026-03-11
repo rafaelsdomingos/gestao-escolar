@@ -38,10 +38,10 @@ class StudentResource extends Resource
         return StudentForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return StudentInfolist::configure($schema);
-    }
+    // public static function infolist(Schema $schema): Schema
+    // {
+    //     return StudentInfolist::configure($schema);
+    // }
 
     public static function table(Table $table): Table
     {

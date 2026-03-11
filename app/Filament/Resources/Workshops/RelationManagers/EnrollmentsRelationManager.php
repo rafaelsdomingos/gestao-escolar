@@ -33,12 +33,17 @@ use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Validation\Rule;
 use Filament\Actions\BulkAction;
 use Illuminate\Support\Collection;
+use Filament\Actions\Action;
+use BackedEnum;
+use Filament\Support\Icons\Heroicon;
 
 class EnrollmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'enrollments';
 
     protected static ?string $title = 'Estudantes matriculados';
+
+    protected static string|BackedEnum|null $icon = Heroicon::OutlinedAcademicCap;
 
     public function form(Schema $schema): Schema
     {
@@ -132,11 +137,11 @@ class EnrollmentsRelationManager extends RelationManager
                     ->formatStateUsing(fn (?EnrollStatus $state) => $state?->label())
                     ->badge()
                     ->color(fn (?EnrollStatus $state): string => match ($state) {
-                        EnrollStatus::cursando => 'info',
-                        EnrollStatus::aprovado => 'success',
-                        EnrollStatus::reprovado => 'danger',
-                        EnrollStatus::abandono => 'danger',
-                        EnrollStatus::trancado => 'gray',
+                        EnrollStatus::CURSANDO => 'info',
+                        EnrollStatus::APROVADO => 'success',
+                        EnrollStatus::REPROVADO => 'danger',
+                        EnrollStatus::ABANDONO => 'danger',
+                        EnrollStatus::TRANCADO => 'gray',
                     })
                     ->searchable(),
                 TextColumn::make('notes')
@@ -161,8 +166,76 @@ class EnrollmentsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->label('Nova matrícula')
+                    ->icon('heroicon-o-plus')
                     ->modalHeading('Matricular estudante'),
-                //AssociateAction::make(),
+                Action::make('printBlankAttendance')
+                    ->label('Frequência em Branco')
+                    ->hiddenLabel()
+                    ->icon('heroicon-o-document')
+                    ->modalWidth('xs')
+                    ->color('gray')
+                    ->schema([
+                        Select::make('month')
+                            ->label('Mês')
+                            ->options([
+                                1 => 'Janeiro',
+                                2 => 'Fevereiro',
+                                3 => 'Março',
+                                4 => 'Abril',
+                                5 => 'Maio',
+                                6 => 'Junho',
+                                7 => 'Julho',
+                                8 => 'Agosto',
+                                9 => 'Setembro',
+                                10 => 'Outubro',
+                                11 => 'Novembro',
+                                12 => 'Dezembro',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function (array $data) {
+                        $url = route('reports.workshop-attendance-blank', [
+                            'workshop' => $this->ownerRecord->id,
+                            'month' => $data['month'],
+                        ]);
+
+                        $this->js("window.open('{$url}', '_blank')");
+                    }),
+                    
+                Action::make('attendanceReport')
+                    ->label('Relatório de Frequência')
+                    ->hiddenLabel()
+                    ->icon('heroicon-o-document-text')
+                    ->modalWidth('xs')
+                    ->color('gray')
+                    ->schema([
+                        Select::make('month')
+                            ->label('Mês')
+                            ->options([
+                                1 => 'Janeiro',
+                                2 => 'Fevereiro',
+                                3 => 'Março',
+                                4 => 'Abril',
+                                5 => 'Maio',
+                                6 => 'Junho',
+                                7 => 'Julho',
+                                8 => 'Agosto',
+                                9 => 'Setembro',
+                                10 => 'Outubro',
+                                11 => 'Novembro',
+                                12 => 'Dezembro',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function (array $data) {
+                        $url = route('reports.workshop-attendance', [
+                            'workshop' => $this->ownerRecord->id,
+                            'month' => $data['month'],
+                        ]);
+
+                        $this->js("window.open('{$url}', '_blank')");
+                    }),
+
             ])
             ->recordActions([
                 //ViewAction::make(),

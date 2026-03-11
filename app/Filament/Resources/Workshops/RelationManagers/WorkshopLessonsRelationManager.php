@@ -23,12 +23,16 @@ use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Carbon\Carbon;
+use BackedEnum;
+use Filament\Support\Icons\Heroicon;
 
 class WorkshopLessonsRelationManager extends RelationManager
 {
     protected static string $relationship = 'workshopLessons';
 
     protected static ?string $title = 'Datas das aulas';
+
+    protected static string|BackedEnum|null $icon = Heroicon::OutlinedCalendarDateRange;
 
     public function form(Schema $schema): Schema
     {
@@ -60,8 +64,6 @@ class WorkshopLessonsRelationManager extends RelationManager
                     ->date('d/m/Y')
                     ->searchable()
                     ->sortable(),
-                ColorColumn::make('color')
-                    ->label('Cor do marcador'),
                 TextColumn::make('starts_at')
                     ->time()
                     ->label('Início'),
@@ -100,6 +102,10 @@ class WorkshopLessonsRelationManager extends RelationManager
                                 6 => 'Sábado',
                             ])
                             ->columns(3)
+                            ->required(),
+                        
+                        ColorPicker::make('color')
+                            ->label('Cor do marcador')
                             ->required(),
 
                         TimePicker::make('starts_at')
@@ -160,7 +166,7 @@ class WorkshopLessonsRelationManager extends RelationManager
                                         'date' => $periodStart->toDateString(),
                                         'starts_at' => $startsAt,
                                         'ends_at' => $endsAt,
-                                        'color' => '#3b82f6',
+                                        'color' => $data['color'],
                                     ]);
 
                                     $created++;

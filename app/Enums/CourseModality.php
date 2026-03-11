@@ -4,16 +4,16 @@ namespace App\Enums;
 
 enum CourseModality : string
 {
-    case presencial = 'presencial';
-    case remoto = 'remoto';
-    case hibrido = 'hibrido';
+    case PRESENCIAL = 'presencial';
+    case REMOTO = 'remoto';
+    case HIBRIDO = 'hibrido';
 
     public function label(): string
     {
         return match ($this) {
-            self::presencial => 'Presencial',
-            self::remoto => 'Remoto',
-            self::hibrido => 'Híbrido',
+            self::PRESENCIAL => 'Presencial',
+            self::REMOTO => 'Remoto',
+            self::HIBRIDO => 'Híbrido',
         };
     }
 }

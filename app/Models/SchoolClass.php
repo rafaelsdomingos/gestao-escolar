@@ -46,4 +46,5 @@ class SchoolClass extends Model
     {
         return $this->hasManyThrough(Lesson::class, SubjectClass::class);
     }
+
 }

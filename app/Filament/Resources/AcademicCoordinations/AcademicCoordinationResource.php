@@ -105,16 +105,16 @@ class AcademicCoordinationResource extends Resource
                 TrashedFilter::make(),
             ])
             ->headerActions([
-                ExportAction::make()
-                    ->exporter(AcademicCoordinationExporter::class)
-                    ->label('Exportar Planilha')
-                    ->icon('heroicon-o-table-cells')
-                    ->enableVisibleTableColumnsByDefault()
-                    ->fileName(fn (Export $export): string => "coordenações-{$export->getKey()}")
-                    ->formats([
-                        ExportFormat::Xlsx,
-                        ExportFormat::Csv,
-                    ])
+                // ExportAction::make()
+                //     ->exporter(AcademicCoordinationExporter::class)
+                //     ->label('Exportar Planilha')
+                //     ->icon('heroicon-o-table-cells')
+                //     ->enableVisibleTableColumnsByDefault()
+                //     ->fileName(fn (Export $export): string => "coordenações-{$export->getKey()}")
+                //     ->formats([
+                //         ExportFormat::Xlsx,
+                //         ExportFormat::Csv,
+                    // ])
             ])
             ->recordActions([
                 EditAction::make(),

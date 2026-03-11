@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Workshops;
 use App\Filament\Resources\Workshops\Pages\CreateWorkshop;
 use App\Filament\Resources\Workshops\Pages\EditWorkshop;
 use App\Filament\Resources\Workshops\Pages\ListWorkshops;
+use App\Filament\Resources\Workshops\Pages\ViewWorkshop;
 use App\Filament\Resources\Workshops\Schemas\WorkshopForm;
 use App\Filament\Resources\Workshops\Tables\WorkshopsTable;
 use App\Models\Workshop;
@@ -56,6 +57,7 @@ class WorkshopResource extends Resource
         return [
             'index' => ListWorkshops::route('/'),
             'create' => CreateWorkshop::route('/create'),
+            'view' => ViewWorkshop::route('/{record}'),
             'edit' => EditWorkshop::route('/{record}/edit'),
         ];
     }

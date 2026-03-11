@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Support\Icons\Heroicon;
 use BackedEnum;
+use Filament\Actions\Action;
+use App\Models\SubjectClass;
 
 class SubjectClassesRelationManager extends RelationManager
 {
@@ -87,6 +89,76 @@ class SubjectClassesRelationManager extends RelationManager
                 //AssociateAction::make(),
             ])
             ->recordActions([
+                Action::make('blackAttendance')
+                    ->label('Frequência em branco')
+                    ->icon('heroicon-o-document')
+                     ->modalWidth('xs')
+                    ->color('gray')
+                    ->schema([
+                        Select::make('month')
+                            ->label('Mês')
+                            ->options([
+                                1 => 'Janeiro',
+                                2 => 'Fevereiro',
+                                3 => 'Março',
+                                4 => 'Abril',
+                                5 => 'Maio',
+                                6 => 'Junho',
+                                7 => 'Julho',
+                                8 => 'Agosto',
+                                9 => 'Setembro',
+                                10 => 'Outubro',
+                                11 => 'Novembro',
+                                12 => 'Dezembro',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function (SubjectClass $record, array $data) {
+                        $url = route('reports.attendance-blank', [
+                            'subjectClass' => $record->id,
+                            'month' => $data['month'],
+                        ]);
+
+                        $this->js("window.open('{$url}', '_blank')");
+                    }),
+
+                Action::make('attendance')
+                    ->label('Frequência')
+                    ->icon('heroicon-o-document-text')
+                    ->modalWidth('xs')
+                    ->schema([
+                        Select::make('month')
+                            ->label('Mês')
+                            ->options([
+                                1 => 'Janeiro',
+                                2 => 'Fevereiro',
+                                3 => 'Março',
+                                4 => 'Abril',
+                                5 => 'Maio',
+                                6 => 'Junho',
+                                7 => 'Julho',
+                                8 => 'Agosto',
+                                9 => 'Setembro',
+                                10 => 'Outubro',
+                                11 => 'Novembro',
+                                12 => 'Dezembro',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function (SubjectClass $record, array $data) {
+                        $url = route('reports.attendance', [
+                            'subjectClass' => $record->id,
+                            'month' => $data['month'],
+                        ]);
+
+                        $this->js("window.open('{$url}', '_blank')");
+                    }),
+
+
+
+
+
+
                 EditAction::make(),
                //DissociateAction::make(),
                 DeleteAction::make(),

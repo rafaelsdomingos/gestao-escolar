@@ -13,9 +13,12 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use App\Enums\EnrollStatus;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class RegisterWorkshopAttendance extends Page
 {
+    use HasPageShield;
+    
     protected string $view = 'filament.pages.register-workshop-attendance';
 
     protected static ?string $slug = 'register-workshop-attendance/{workshop_lesson_id}';
@@ -46,7 +49,7 @@ class RegisterWorkshopAttendance extends Page
         $enrollments = $this->lesson
             ->workshop
             ->enrollments
-            ->where('status', EnrollStatus::cursando)
+            ->where('status', EnrollStatus::CURSANDO)
             ->sortBy(fn ($e) => $e->student->name);
 
         $this->attendances = $enrollments->map(function ($enrollment) {

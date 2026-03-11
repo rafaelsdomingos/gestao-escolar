@@ -13,10 +13,11 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use App\Enums\EnrollStatus;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class RegisterAttendance extends Page implements HasForms
 {
-    use InteractsWithForms;
+    use InteractsWithForms, HasPageShield;
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -50,7 +51,7 @@ class RegisterAttendance extends Page implements HasForms
             ->subjectClass
             ->schoolClass
             ->enrollments
-            ->where('status', EnrollStatus::cursando)
+            ->where('status', EnrollStatus::CURSANDO)
             ->sortBy(fn ($e) => $e->student->name);
 
         $this->attendances = $enrollments->map(function ($enrollment) {

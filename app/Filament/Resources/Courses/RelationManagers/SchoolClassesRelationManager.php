@@ -15,6 +15,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -62,6 +63,12 @@ class SchoolClassesRelationManager extends RelationManager
                         'Tarde' => 'Tarde',
                         'Noite' => 'Noite'
                     ])
+                    ->required(),
+                DatePicker::make('start_date')
+                    ->label('Data de início')
+                    ->required(),
+                DatePicker::make('end_date')
+                    ->label('Data de encerramento')
                     ->required(),
             ]);
     }

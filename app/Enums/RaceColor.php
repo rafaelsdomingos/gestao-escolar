@@ -4,22 +4,22 @@ namespace App\Enums;
 
 enum RaceColor : string
 {
-    case branca = 'branca';
-    case preta = 'preta';
-    case parda = 'parda';
-    case amarela = 'amarela';
-    case indigena = 'indigena';
-    case nao_declarada = 'nao_declarada';
+    case BRANCA = 'branca';
+    case PRETA = 'preta';
+    case PARDA = 'parda';
+    case AMARELA = 'amarela';
+    case INDIGENA = 'indigena';
+    case NAO_DECLARADA = 'nao_declarada';
 
     public function label(): string
     {
         return match ($this) {
-            self::branca => 'Branca',
-            self::preta => 'Preta',
-            self::parda => 'Parda',
-            self::amarela => 'Amarela',
-            self::indigena => 'Indígena',
-            self::nao_declarada => 'Não declarada',
+            self::BRANCA => 'Branca',
+            self::PRETA => 'Preta',
+            self::PARDA => 'Parda',
+            self::AMARELA => 'Amarela',
+            self::INDIGENA => 'Indígena',
+            self::NAO_DECLARADA => 'Não declarada',
         };
     }
 }
